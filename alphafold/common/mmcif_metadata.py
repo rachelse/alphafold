@@ -19,50 +19,15 @@ from alphafold import version
 import numpy as np
 
 
-_DISCLAIMER = """ALPHAFOLD DATA, COPYRIGHT (2021) DEEPMIND TECHNOLOGIES LIMITED.
-THE INFORMATION PROVIDED IS THEORETICAL MODELLING ONLY AND CAUTION SHOULD BE
-EXERCISED IN ITS USE. IT IS PROVIDED "AS-IS" WITHOUT ANY WARRANTY OF ANY KIND,
-WHETHER EXPRESSED OR IMPLIED. NO WARRANTY IS GIVEN THAT USE OF THE INFORMATION
-SHALL NOT INFRINGE THE RIGHTS OF ANY THIRD PARTY. DISCLAIMER: THE INFORMATION IS
-NOT INTENDED TO BE A SUBSTITUTE FOR PROFESSIONAL MEDICAL ADVICE, DIAGNOSIS, OR
-TREATMENT, AND DOES NOT CONSTITUTE MEDICAL OR OTHER PROFESSIONAL ADVICE. IT IS
-AVAILABLE FOR ACADEMIC AND COMMERCIAL PURPOSES, UNDER CC-BY 4.0 LICENCE."""
+_DISCLAIMER = """"""  # TODO: Add a disclaimer.
 
 # Authors of the Nature methods paper we reference in the mmCIF.
 _MMCIF_PAPER_AUTHORS = (
-    'Jumper, John',
-    'Evans, Richard',
-    'Pritzel, Alexander',
-    'Green, Tim',
-    'Figurnov, Michael',
-    'Ronneberger, Olaf',
-    'Tunyasuvunakool, Kathryn',
-    'Bates, Russ',
-    'Zidek, Augustin',
-    'Potapenko, Anna',
-    'Bridgland, Alex',
-    'Meyer, Clemens',
-    'Kohl, Simon A. A.',
-    'Ballard, Andrew J.',
-    'Cowie, Andrew',
-    'Romera-Paredes, Bernardino',
-    'Nikolov, Stanislav',
-    'Jain, Rishub',
-    'Adler, Jonas',
-    'Back, Trevor',
-    'Petersen, Stig',
-    'Reiman, David',
-    'Clancy, Ellen',
-    'Zielinski, Michal',
+    'Kim, Rachel Seongeun',
+    'Levy Karin, Eli',
+    'Mirdita, Milot',
+    'Chikhi, Rayan',
     'Steinegger, Martin',
-    'Pacholska, Michalina',
-    'Berghammer, Tamas',
-    'Silver, David',
-    'Vinyals, Oriol',
-    'Senior, Andrew W.',
-    'Kavukcuoglu, Koray',
-    'Kohli, Pushmeet',
-    'Hassabis, Demis',
 )
 
 # Authors of the mmCIF - we set them to be equal to the authors of the paper.
@@ -115,20 +80,20 @@ def add_metadata_to_mmcif(
   # Paper citation details.
   cif['_citation.id'] = ['primary']
   cif['_citation.title'] = [
-      'Highly accurate protein structure prediction with AlphaFold'
+      'BFVD—a large repository of predicted viral protein structures'
   ]
-  cif['_citation.journal_full'] = ['Nature']
-  cif['_citation.journal_volume'] = ['596']
-  cif['_citation.page_first'] = ['583']
-  cif['_citation.page_last'] = ['589']
-  cif['_citation.year'] = ['2021']
-  cif['_citation.journal_id_ASTM'] = ['NATUAS']
+  cif['_citation.journal_full'] = ['Nucleic Acids Research']
+  cif['_citation.journal_volume'] = ['?']
+  cif['_citation.page_first'] = ['gkae1119']
+  cif['_citation.page_last'] = ['gkae1119']
+  cif['_citation.year'] = ['2024']
+  cif['_citation.journal_id_ASTM'] = ['NARHAD']
   cif['_citation.country'] = ['UK']
-  cif['_citation.journal_id_ISSN'] = ['0028-0836']
-  cif['_citation.journal_id_CSD'] = ['0006']
-  cif['_citation.book_publisher'] = ['?']
-  cif['_citation.pdbx_database_id_PubMed'] = ['34265844']
-  cif['_citation.pdbx_database_id_DOI'] = ['10.1038/s41586-021-03819-2']
+  cif['_citation.journal_id_ISSN'] = ['0305-1048']
+  cif['_citation.journal_id_CSD'] = ['?'] # TODO
+  cif['_citation.book_publisher'] = ['Oxford University Press']
+  cif['_citation.pdbx_database_id_PubMed'] = ['39574394']
+  cif['_citation.pdbx_database_id_DOI'] = ['10.1093/nar/gkae1119']
 
   # Type of data in the dataset including data used in the model generation.
   cif['_ma_data.id'] = ['1']
