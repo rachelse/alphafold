@@ -7,6 +7,7 @@ from typing import Mapping, Sequence
 # from alphafold.common.protein import _get_entity_poly_seq
 from alphafold.common import residue_constants
 import numpy as np
+import collections
 
 def add_ma_qa_metric_local(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[str]]:
 
@@ -52,3 +53,31 @@ def get_entity_poly_seq_one(chain_index : np.ndarray, residue_index : np.ndarray
   for chain in entity_seq.keys():
     entity_seq[chain] = "\n".join([entity_seq[chain][i:i+80] for i in range(0, len(entity_seq[chain]), 80)])    
   return entity_seq
+
+def get_pdbx_audit_revision():
+  """Returns the _pdbx_audit_revision_history category. 
+  history: (ordinal, data_content_type, major_revision, minor_revision, revision_date)
+  details: (ordinal, revision_ordinal, data_content_type, provider, type, description)"""
+  versions = [
+    {
+      'data_content_type': 'Structure model', 'provider': 'BFVD', 
+      'major_revision': '1', 'minor_revision': '0', 'revision_date': '2024-11-01', 
+      'type': 'Initial release', 'description': 'Initial release'
+     },
+  ]
+  cif = collections.defaultdict(list)
+
+  for i, version in enumerate(versions, start=1):
+    cif['_pdbx_audit_revision_history.ordinal'].append(str(i))
+    cif['_pdbx_audit_revision_history.data_content_type'].append(version['data_content_type'])
+    cif['_pdbx_audit_revision_history.major_revision'].append(version['major_revision'])
+    cif['_pdbx_audit_revision_history.minor_revision'].append(version['minor_revision'])
+    cif['_pdbx_audit_revision_history.revision_date'].append(version['revision_date'])
+
+    cif['_pdbx_audit_revision_details.ordinal'].append(str(i))
+    cif['_pdbx_audit_revision_details.revision_ordinal'].append(str(i))
+    cif['_pdbx_audit_revision_details.data_content_type'].append(version['data_content_type'])
+    cif['_pdbx_audit_revision_details.provider'].append(version['provider'])
+    cif['_pdbx_audit_revision_details.type'].append(version['type'])
+    cif['_pdbx_audit_revision_details.description'].append(version['description'])
+  return cif

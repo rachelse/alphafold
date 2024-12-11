@@ -132,9 +132,7 @@ def add_metadata_to_mmcif(
 
   # TODO: _ma_target_ref_db_details
 
-  # TODO: _pdbx_audit_revision_history
-  # TODO: _pdbx_audit_revision_details
-
+  cif.update(bfvd_util.get_pdbx_audit_revision())
   
   # Details of the models being deposited.
   cif['_ma_model_list.ordinal_id'] = ['1']
