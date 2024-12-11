@@ -16,10 +16,20 @@
 
 from typing import Mapping, Sequence
 from alphafold import version
+from alphafold.common import bfvd_util
 import numpy as np
 
 
-_DISCLAIMER = """"""  # TODO: Add a disclaimer.
+_DISCLAIMER = """#TODO""" 
+
+# _DISCLAIMER = """ALPHAFOLD DATA, COPYRIGHT (2021) DEEPMIND TECHNOLOGIES LIMITED.
+# THE INFORMATION PROVIDED IS THEORETICAL MODELLING ONLY AND CAUTION SHOULD BE
+# EXERCISED IN ITS USE. IT IS PROVIDED "AS-IS" WITHOUT ANY WARRANTY OF ANY KIND,
+# WHETHER EXPRESSED OR IMPLIED. NO WARRANTY IS GIVEN THAT USE OF THE INFORMATION
+# SHALL NOT INFRINGE THE RIGHTS OF ANY THIRD PARTY. DISCLAIMER: THE INFORMATION IS
+# NOT INTENDED TO BE A SUBSTITUTE FOR PROFESSIONAL MEDICAL ADVICE, DIAGNOSIS, OR
+# TREATMENT, AND DOES NOT CONSTITUTE MEDICAL OR OTHER PROFESSIONAL ADVICE. IT IS
+# AVAILABLE FOR ACADEMIC AND COMMERCIAL PURPOSES, UNDER CC-BY 4.0 LICENCE."""
 
 # Authors of the Nature methods paper we reference in the mmCIF.
 _MMCIF_PAPER_AUTHORS = (
@@ -120,6 +130,12 @@ def add_metadata_to_mmcif(
       cif['_ma_target_entity.entity_id']
   )
 
+  # TODO: _ma_target_ref_db_details
+
+  # TODO: _pdbx_audit_revision_history
+  # TODO: _pdbx_audit_revision_details
+
+  
   # Details of the models being deposited.
   cif['_ma_model_list.ordinal_id'] = ['1']
   cif['_ma_model_list.model_id'] = ['1']
@@ -172,6 +188,9 @@ def add_metadata_to_mmcif(
       [float(v) for v in old_cif['_atom_site.B_iso_or_equiv']]
   )
   cif['_ma_qa_metric_global.metric_value'] = [f'{global_plddt:.2f}']
+
+  ma_qa_metric_local = bfvd_util.add_ma_qa_metric_local(old_cif)
+  cif.update(ma_qa_metric_local)
 
   cif['_atom_type.symbol'] = sorted(set(old_cif['_atom_site.type_symbol']))
 

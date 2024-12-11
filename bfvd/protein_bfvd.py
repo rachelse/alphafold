@@ -15,7 +15,7 @@
 """Protein data type."""
 import sys
 import os
-sys.path.append('/home/seamustard52/repository/alphafold')
+sys.path.append('/home/seamustard52/repository/alphafold-rachel')
 
 import collections
 import dataclasses
@@ -32,13 +32,14 @@ from Bio.PDB.Structure import Structure
 import numpy as np
 
 if __name__ == "__main__":
-    pdb_dir = "/home/seamustard52/bfvd-analysis/pdbs_bfvd_logan"
+    # pdb_dir = "/home/seamustard52/bfvd-analysis/pdbs_bfvd_logan"
+    pdb_dir = "bfvd/test_pdb"
     pdb_files = os.listdir(pdb_dir)
     # out_dir = "/home/seamustard52/bfvd-analysis/test"
-    out_dir = "bfvd/test"
+    out_dir = "bfvd/test_cif"
 
 
-    for ex_in in pdb_files[:1]:
+    for ex_in in pdb_files:
         ex_in = os.path.join(pdb_dir, ex_in)
         file_id = os.path.basename(ex_in).split(".")[0]
         ex_out = os.path.join(out_dir, file_id + ".cif")
@@ -48,6 +49,6 @@ if __name__ == "__main__":
 
         prot = protein.from_pdb_string(pdb_string)
         cif = protein.to_mmcif(prot, file_id, "Monomer")
-        print(cif)
-        # with open(ex_out, "w") as f:
-        #     f.write(cif)
+        # print(cif)
+        with open(ex_out, "w") as f:
+            f.write(cif)

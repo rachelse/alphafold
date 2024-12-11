@@ -21,6 +21,7 @@ import io
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 from alphafold.common import mmcif_metadata
 from alphafold.common import residue_constants
+from alphafold.common import bfvd_util
 from Bio.PDB import MMCIFParser
 from Bio.PDB import PDBParser
 from Bio.PDB.mmcifio import MMCIFIO
@@ -420,14 +421,21 @@ def to_mmcif(
   mmcif_dict['_entry.id'] = file_id.upper()
 
   label_asym_id_to_entity_id = {}
+
+  entity_seq = bfvd_util.get_entity_poly_seq_one(chain_index, residue_index, aatype)
+
   # Entity and chain information.
   for entity_id, chain_id in chain_ids.items():
-    # Add all chain information to the _struct_asym table.
+    # Addz all chain information to the _struct_asym table.
     label_asym_id_to_entity_id[str(chain_id)] = str(entity_id)
     mmcif_dict['_struct_asym.id'].append(chain_id)
     mmcif_dict['_struct_asym.entity_id'].append(str(entity_id))
     # Add information about the entity to the _entity_poly table.
     mmcif_dict['_entity_poly.entity_id'].append(str(entity_id))
+    mmcif_dict['_entity_poly.nstd_linkage'].append('no')
+    mmcif_dict['_entity_poly.nstd_monomer'].append('no')
+    mmcif_dict['_entity_poly.pdbx_seq_one_letter_code'].append(entity_seq[entity_id].strip())
+    mmcif_dict['_entity_poly.pdbx_seq_one_letter_code_can'].append(entity_seq[entity_id].strip())
     mmcif_dict['_entity_poly.type'].append(residue_constants.PROTEIN_CHAIN)
     mmcif_dict['_entity_poly.pdbx_strand_id'].append(chain_id)
     # Generate the _entity table.
