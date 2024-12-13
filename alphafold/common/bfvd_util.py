@@ -7,9 +7,10 @@ from typing import Mapping, Sequence
 # from alphafold.common.protein import _get_entity_poly_seq
 from alphafold.common import residue_constants
 import numpy as np
+import pandas as pd
 import collections
 
-def add_ma_qa_metric_local(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[str]]:
+def get_ma_qa_metric_local(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[str]]:
 
   """Adds local pLDDT QA metric to the CIF file. (_ma_qa_metric_local)"""
   cif = {}
@@ -80,4 +81,60 @@ def get_pdbx_audit_revision():
     cif['_pdbx_audit_revision_details.provider'].append(version['provider'])
     cif['_pdbx_audit_revision_details.type'].append(version['type'])
     cif['_pdbx_audit_revision_details.description'].append(version['description'])
+  return cif
+
+def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[str]]:
+  """Returns the _ma_target_ref_db_details category. 
+  details: (target_entity_id, 
+            db_name, db_name_other_details, db_code, db_accession,
+            seq_db_isoform, seq_db_align_begin, seq_db_align_end, 
+            gene_name, ncbi_taxonomy_id, organism__scientific,
+            seq_db_sequence_version_date, seq_db_sequence_checksum)"""
+  #TODO : Provide metadata with arguments
+  uniprot_path = "/home/seamustard52/bfvd-analysis/3d-beacons-bfvd/metadata/uniprot-acc_length_taxid_organism_src_id_description_gene_sampled.tsv"
+  bfvd_path = "/home/seamustard52/bfvd-analysis/3d-beacons-bfvd/metadata/bfvd_logan-entry_acc_start_end_len_plddt_taxid_organism_src.tsv"
+
+  uniprot_data = pd.read_csv(uniprot_path, sep="\t", 
+                           names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
+                           dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
+                           index_col=0
+                           ).fillna("?").T.to_dict()
+  
+  bfvd_data = pd.read_csv(bfvd_path, sep="\t",
+                        names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
+                        dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
+                        index_col=0).T.to_dict()
+
+  cif = collections.defaultdict(list)
+  filename = old_cif['_entry.id']
+  idx = filename.find("_UNRELAXED_RANK_001")
+  entry = filename[:idx]
+  acc = entry.split("_")[0]
+  print(filename)
+  for id in range(len(old_cif['_entity.id'])):
+
+    cif['_ma_target_ref_db_details.target_entity_id'].append(old_cif['_entity.id'][id])
+    cif['_ma_target_ref_db_details.db_name'].append('UNP')
+
+    if bfvd_data[entry]["src"] == "UNIPARC":
+      db_details = "UNIPARC"
+      db_code = "?"
+      gene = "?"
+    else:
+      db_details = "?"
+      db_code = uniprot_data[acc]['id']
+      gene = uniprot_data[acc]['gene']
+
+    cif['_ma_target_ref_db_details.db_name_other_details'].append(db_details)
+    cif['_ma_target_ref_db_details.db_code'].append(db_code)
+    cif['_ma_target_ref_db_details.db_accession'].append(acc)
+    cif['_ma_target_ref_db_details.seq_db_isoform'].append('?')
+    cif['_ma_target_ref_db_details.seq_db_align_begin'].append(str(bfvd_data[entry]['start']))
+    cif['_ma_target_ref_db_details.seq_db_align_end'].append(str(bfvd_data[entry]['end']))
+    cif['_ma_target_ref_db_details.gene_name'].append(gene)
+    cif['_ma_target_ref_db_details.ncbi_taxonomy_id'].append(str(bfvd_data[entry]['taxid']))
+    cif['_ma_target_ref_db_details.organism__scientific'].append(bfvd_data[entry]['organism'])
+    cif['_ma_target_ref_db_details.seq_db_sequence_version_date'].append('2023-02') #TODO
+    cif['_ma_target_ref_db_details.seq_db_sequence_checksum'].append('?') #TODO
+
   return cif

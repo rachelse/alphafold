@@ -130,7 +130,8 @@ def add_metadata_to_mmcif(
       cif['_ma_target_entity.entity_id']
   )
 
-  # TODO: _ma_target_ref_db_details
+  # DOING: _ma_target_ref_db_details
+  cif.update(bfvd_util.get_ma_target_ref_db_details(old_cif))
 
   cif.update(bfvd_util.get_pdbx_audit_revision())
   
@@ -187,7 +188,7 @@ def add_metadata_to_mmcif(
   )
   cif['_ma_qa_metric_global.metric_value'] = [f'{global_plddt:.2f}']
 
-  ma_qa_metric_local = bfvd_util.add_ma_qa_metric_local(old_cif)
+  ma_qa_metric_local = bfvd_util.get_ma_qa_metric_local(old_cif)
   cif.update(ma_qa_metric_local)
 
   cif['_atom_type.symbol'] = sorted(set(old_cif['_atom_site.type_symbol']))
