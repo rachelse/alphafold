@@ -15,40 +15,63 @@
 """Protein data type."""
 import sys
 import os
-sys.path.append('/home/seamustard52/repository/alphafold-rachel')
+sys.path.append('/home/seamustard52/repository/alphafold-rachelse')
+import argparse
+import concurrent.futures
+from pathlib import Path
 
-import collections
-import dataclasses
-import functools
-import io
-from typing import Any, Dict, List, Mapping, Optional, Tuple
-from alphafold.common import mmcif_metadata
-from alphafold.common import residue_constants
 from alphafold.common import protein
-from Bio.PDB import MMCIFParser
-from Bio.PDB import PDBParser
-from Bio.PDB.mmcifio import MMCIFIO
-from Bio.PDB.Structure import Structure
-import numpy as np
+
+def pdb2cif(pdb_file, cif_file, file_id=None):
+    with open(pdb_file) as f:
+        pdb_string = f.read()
+
+    if file_id is None:
+        file_id = os.path.basename(pdb_file).split(".")[0]
+
+    prot = protein.from_pdb_string(pdb_string)
+    print(f"Converting {file_id} to cif")
+    cif = protein.to_mmcif(prot, file_id,  "Monomer")
+    with open(cif_file, "w") as f:
+        print(f"Writing cif to {cif_file}")
+        f.write(cif)
 
 if __name__ == "__main__":
-    # pdb_dir = "/home/seamustard52/bfvd-analysis/pdbs_bfvd_logan"
-    pdb_dir = "bfvd/test_pdb"
-    pdb_files = os.listdir(pdb_dir)
-    # out_dir = "/home/seamustard52/bfvd-analysis/test"
-    out_dir = "bfvd/test_cif"
+    argparser = argparse.ArgumentParser()
 
+    argparser.add_argument("--pdb", "-i", type=str, 
+                           help="Input pdb file or directory",
+                           default = "bfvd/test_pdb",
+                        #    default="/home/seamustard52/bfvd-analysis/pdbs_bfvd_logan"
+                           )
+    argparser.add_argument("--cif", "-o", type=str,
+                            help="Output cif file or directory",
+                            default = "bfvd/test_cif")
+    argparser.add_argument("--cpus", "-c", type=int, default=os.cpu_count())
+    
+    args = argparser.parse_args()
 
-    for ex_in in pdb_files:
-        ex_in = os.path.join(pdb_dir, ex_in)
-        file_id = os.path.basename(ex_in).split(".")[0]
-        ex_out = os.path.join(out_dir, file_id + ".cif")
+    if not os.path.exists(args.pdb):
+        raise ValueError("Input path does not exist")
 
-        with open(ex_in) as f:
-            pdb_string = f.read()
+    input_path = Path(args.pdb)
 
-        prot = protein.from_pdb_string(pdb_string)
-        cif = protein.to_mmcif(prot, file_id, "Monomer")
-        # print(cif)
-        with open(ex_out, "w") as f:
-            f.write(cif)
+    if input_path.is_file():
+        if args.cif.endswith(".cif"):
+            output_path = Path(args.cif)
+        else:
+            raise ValueError("Output path must be a .cif file")
+        output_path = Path(args.cif)
+        pdb2cif(input_path, output_path)
+
+    else:
+        if not os.path.exists(args.cif):
+            os.makedirs(args.cif)
+        
+        pdb_files = list(input_path.glob("*.pdb"))
+        cif_files = [os.path.join(args.cif, os.path.basename(pdb_file).split(".")[0] + ".cif") for pdb_file in pdb_files]
+
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=args.cpus) as executor:
+            futures = [executor.submit(pdb2cif, pdb_file, cif_file) for pdb_file, cif_file in zip(pdb_files, cif_files)]
+            concurrent.futures.wait(futures)
