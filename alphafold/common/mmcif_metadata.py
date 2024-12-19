@@ -46,7 +46,7 @@ _CITATIONS = [bfvd_constants._BFVD_CITATION, bfvd_constants._COLABFOLD_CITATION,
 
 
 def add_metadata_to_mmcif(
-    old_cif: Mapping[str, Sequence[str]], model_type: str
+    old_cif: Mapping[str, Sequence[str]], model_type: str,
 ) -> Mapping[str, Sequence[str]]:
   """Adds AlphaFold metadata in the given mmCIF."""
   cif = {}
@@ -129,18 +129,6 @@ def add_metadata_to_mmcif(
 
   # Software used.
   cif.update(bfvd_util.get_software(bfvd_constants._SOFTWARE))
-#   cif['_software.pdbx_ordinal'] = ['1']
-#   cif['_software.name'] = ['AlphaFold']
-#   cif['_software.version'] = [f'v{version.__version__}']
-#   cif['_software.type'] = ['package']
-#   cif['_software.description'] = ['Structure prediction']
-#   cif['_software.classification'] = ['other']
-#   cif['_software.date'] = ['?']
-
-  # Collection of software into groups.
-#   cif['_ma_software_group.ordinal_id'] = ['1']
-#   cif['_ma_software_group.group_id'] = ['1']
-#   cif['_ma_software_group.software_id'] = ['1']
 
   # Method description to conform with ModelCIF.
   cif.update(bfvd_util.get_ma_protocol_step())

@@ -132,3 +132,6 @@ _SOFTWARE = [
     {"name": "ColabFold", "version": "v1.5.2", "type": "package", "description": "Structure prediction", "classification": "other", "date": "?"},
     {"name": "AlphaFold", "version": ".", "type": "package", "description": "Structure prediction", "classification": "other", "date": "?"},
 ]
+ 
+_BFVD_DATA = "/home/seamustard52/bfvd-analysis/3d-beacons-bfvd/metadata/bfvd_logan-entry_acc_start_end_len_plddt_taxid_organism_src.tsv"
+_UNIPROT_DATA = "/home/seamustard52/bfvd-analysis/3d-beacons-bfvd/metadata/uniprot-acc_length_taxid_organism_src_id_description_gene.tsv"

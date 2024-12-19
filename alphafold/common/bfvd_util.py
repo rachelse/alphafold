@@ -9,16 +9,18 @@ from alphafold.common import residue_constants
 import numpy as np
 import pandas as pd
 import collections
+import alphafold.common.bfvd_constants as bfvd_constants
 
 def add_atom_site(old_cif: Mapping[str, Sequence[str]]):
   """Adds the _atom_site category to the CIF file."""
-  acc = old_cif['_entry.id'].split("_")[0]
-  num = old_cif['_atom_site.label_seq_id'][-1]
-  aa = old_cif['_atom_site.label_comp_id'][-1]
-  old_cif['_atom_site.pdbx_sifts_xref_db_acc'].append(acc)
-  old_cif['_atom_site.pdbx_sifts_xref_db_name'].append('UNP') # UNP
-  old_cif['_atom_site.pdbx_sifts_xref_db_num'].append(str(num))
-  old_cif['_atom_site.pdbx_sifts_xref_db_res'].append(residue_constants.restype_3to1[aa])
+  acc = old_cif['_ma_target_ref_db_details.db_accession'][0] # NOTE:This only works for monomer
+  db_name = old_cif['_ma_target_ref_db_details.db_name'][0]
+  seq_start = int(old_cif['_ma_target_ref_db_details.seq_db_align_begin'][0])
+
+  old_cif['_atom_site.pdbx_sifts_xref_db_acc'] = [acc] * len(old_cif['_atom_site.label_seq_id'])
+  old_cif['_atom_site.pdbx_sifts_xref_db_name'] = [db_name] * len(old_cif['_atom_site.label_seq_id'])
+  old_cif['_atom_site.pdbx_sifts_xref_db_num'] = [str(seq_start + int(i) - 1) for i in old_cif['_atom_site.label_seq_id']]
+  old_cif['_atom_site.pdbx_sifts_xref_db_res'] = [residue_constants.restype_3to1[aa] for aa in old_cif['_atom_site.label_comp_id']]
 
 def get_ma_qa_metric_local(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[str]]:
 
@@ -87,24 +89,22 @@ def get_pdbx_audit_revision(versions: list) -> Mapping[str, Sequence[str]]:
     cif['_pdbx_audit_revision_details.description'].append(version['description'])
   return cif
 
-def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[str]]:
+def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
+                                ) -> Mapping[str, Sequence[str]]:
   """Returns the _ma_target_ref_db_details category. 
   details: (target_entity_id, 
             db_name, db_name_other_details, db_code, db_accession,
             seq_db_isoform, seq_db_align_begin, seq_db_align_end, 
             gene_name, ncbi_taxonomy_id, organism__scientific,
             seq_db_sequence_version_date, seq_db_sequence_checksum)"""
-  #TODO : Provide metadata with arguments
-  uniprot_path = "/home/seamustard52/bfvd-analysis/3d-beacons-bfvd/metadata/uniprot-acc_length_taxid_organism_src_id_description_gene_sampled.tsv"
-  bfvd_path = "/home/seamustard52/bfvd-analysis/3d-beacons-bfvd/metadata/bfvd_logan-entry_acc_start_end_len_plddt_taxid_organism_src.tsv"
 
-  uniprot_data = pd.read_csv(uniprot_path, sep="\t", 
+  uniprot_data = pd.read_csv(bfvd_constants._UNIPROT_DATA, sep="\t", 
                            names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
                            dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
                            index_col=0
                            ).fillna("?").T.to_dict()
   
-  bfvd_data = pd.read_csv(bfvd_path, sep="\t",
+  bfvd_data = pd.read_csv(bfvd_constants._BFVD_DATA, sep="\t",
                         names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
                         dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
                         index_col=0).T.to_dict()
