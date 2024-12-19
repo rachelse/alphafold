@@ -498,6 +498,9 @@ def to_mmcif(
       mmcif_dict['_atom_site.auth_asym_id'].append(chain_ids[chain_index[i]])
       mmcif_dict['_atom_site.pdbx_PDB_model_num'].append('1')
 
+      #DOING
+      bfvd_util.add_atom_site(mmcif_dict)
+
       atom_index += 1
 
   metadata_dict = mmcif_metadata.add_metadata_to_mmcif(mmcif_dict, model_type)

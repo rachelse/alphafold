@@ -30,7 +30,7 @@ def pdb2cif(pdb_file, cif_file, file_id=None):
         file_id = os.path.basename(pdb_file).split(".")[0]
 
     prot = protein.from_pdb_string(pdb_string)
-    print(f"Converting {file_id} to cif")
+    print(f"Converting {pdb_file} to {cif_file}")
     cif = protein.to_mmcif(prot, file_id,  "Monomer")
     with open(cif_file, "w") as f:
         print(f"Writing cif to {cif_file}")
@@ -63,7 +63,14 @@ if __name__ == "__main__":
             raise ValueError("Output path must be a .cif file")
         output_path = Path(args.cif)
         pdb2cif(input_path, output_path)
-
+    elif args.cpus ==1:
+        if not os.path.exists(args.cif):
+            os.makedirs(args.cif)
+        
+        pdb_files = list(input_path.glob("*.pdb"))
+        cif_files = [os.path.join(args.cif, os.path.basename(pdb_file).split(".")[0] + ".cif") for pdb_file in pdb_files]
+        for pdb_file, cif_file in zip(pdb_files, cif_files):
+            pdb2cif(pdb_file, cif_file)
     else:
         if not os.path.exists(args.cif):
             os.makedirs(args.cif)
@@ -71,7 +78,9 @@ if __name__ == "__main__":
         pdb_files = list(input_path.glob("*.pdb"))
         cif_files = [os.path.join(args.cif, os.path.basename(pdb_file).split(".")[0] + ".cif") for pdb_file in pdb_files]
 
+
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=args.cpus) as executor:
+
             futures = [executor.submit(pdb2cif, pdb_file, cif_file) for pdb_file, cif_file in zip(pdb_files, cif_files)]
             concurrent.futures.wait(futures)

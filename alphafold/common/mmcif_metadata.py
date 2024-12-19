@@ -16,11 +16,11 @@
 
 from typing import Mapping, Sequence
 from alphafold import version
-from alphafold.common import bfvd_util
+from alphafold.common import bfvd_util, bfvd_constants
 import numpy as np
 
 
-_DISCLAIMER = """#TODO""" 
+_DISCLAIMER = """?""" 
 
 # _DISCLAIMER = """ALPHAFOLD DATA, COPYRIGHT (2021) DEEPMIND TECHNOLOGIES LIMITED.
 # THE INFORMATION PROVIDED IS THEORETICAL MODELLING ONLY AND CAUTION SHOULD BE
@@ -32,16 +32,17 @@ _DISCLAIMER = """#TODO"""
 # AVAILABLE FOR ACADEMIC AND COMMERCIAL PURPOSES, UNDER CC-BY 4.0 LICENCE."""
 
 # Authors of the Nature methods paper we reference in the mmCIF.
-_MMCIF_PAPER_AUTHORS = (
-    'Kim, Rachel Seongeun',
-    'Levy Karin, Eli',
-    'Mirdita, Milot',
-    'Chikhi, Rayan',
-    'Steinegger, Martin',
-)
+# _MMCIF_PAPER_AUTHORS = (
+#     'Kim, Rachel Seongeun',
+#     'Levy Karin, Eli',
+#     'Mirdita, Milot',
+#     'Chikhi, Rayan',
+#     'Steinegger, Martin',
+# )
 
 # Authors of the mmCIF - we set them to be equal to the authors of the paper.
-_MMCIF_AUTHORS = _MMCIF_PAPER_AUTHORS
+_MMCIF_AUTHORS = bfvd_constants._BFVD_CITATION["authors"]
+_CITATIONS = [bfvd_constants._BFVD_CITATION, bfvd_constants._COLABFOLD_CITATION, bfvd_constants._ALPHAFOLD_CITATION]
 
 
 def add_metadata_to_mmcif(
@@ -79,31 +80,10 @@ def add_metadata_to_mmcif(
     cif['_audit_author.pdbx_ordinal'].append(str(author_index))
 
   # Paper author details.
-  cif['_citation_author.citation_id'] = []
-  cif['_citation_author.name'] = []
-  cif['_citation_author.ordinal'] = []
-  for author_index, author_name in enumerate(_MMCIF_PAPER_AUTHORS, start=1):
-    cif['_citation_author.citation_id'].append('primary')
-    cif['_citation_author.name'].append(author_name)
-    cif['_citation_author.ordinal'].append(str(author_index))
+  cif.update(bfvd_util.get_citation_author(_CITATIONS))
 
-  # Paper citation details.
-  cif['_citation.id'] = ['primary']
-  cif['_citation.title'] = [
-      'BFVD—a large repository of predicted viral protein structures'
-  ]
-  cif['_citation.journal_full'] = ['Nucleic Acids Research']
-  cif['_citation.journal_volume'] = ['?']
-  cif['_citation.page_first'] = ['gkae1119']
-  cif['_citation.page_last'] = ['gkae1119']
-  cif['_citation.year'] = ['2024']
-  cif['_citation.journal_id_ASTM'] = ['NARHAD']
-  cif['_citation.country'] = ['UK']
-  cif['_citation.journal_id_ISSN'] = ['0305-1048']
-  cif['_citation.journal_id_CSD'] = ['?'] # TODO
-  cif['_citation.book_publisher'] = ['Oxford University Press']
-  cif['_citation.pdbx_database_id_PubMed'] = ['39574394']
-  cif['_citation.pdbx_database_id_DOI'] = ['10.1093/nar/gkae1119']
+#   # Paper citation details.
+  cif.update(bfvd_util.get_citation(_CITATIONS))
 
   # Type of data in the dataset including data used in the model generation.
   cif['_ma_data.id'] = ['1']

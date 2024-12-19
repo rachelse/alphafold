@@ -10,6 +10,16 @@ import numpy as np
 import pandas as pd
 import collections
 
+def add_atom_site(old_cif: Mapping[str, Sequence[str]]):
+  """Adds the _atom_site category to the CIF file."""
+  acc = old_cif['_entry.id'].split("_")[0]
+  num = old_cif['_atom_site.label_seq_id'][-1]
+  aa = old_cif['_atom_site.label_comp_id'][-1]
+  old_cif['_atom_site.pdbx_sifts_xref_db_acc'].append(acc)
+  old_cif['_atom_site.pdbx_sifts_xref_db_name'].append('UNP') # UNP
+  old_cif['_atom_site.pdbx_sifts_xref_db_num'].append(str(num))
+  old_cif['_atom_site.pdbx_sifts_xref_db_res'].append(residue_constants.restype_3to1[aa])
+
 def get_ma_qa_metric_local(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[str]]:
 
   """Adds local pLDDT QA metric to the CIF file. (_ma_qa_metric_local)"""
@@ -110,7 +120,7 @@ def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]]) -> Mappin
   idx = filename.find("_UNRELAXED_RANK_001")
   entry = filename[:idx]
   acc = entry.split("_")[0]
-  print(filename)
+  
   for id in range(len(old_cif['_entity.id'])):
 
     cif['_ma_target_ref_db_details.target_entity_id'].append(old_cif['_entity.id'][id])
@@ -137,4 +147,39 @@ def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]]) -> Mappin
     cif['_ma_target_ref_db_details.seq_db_sequence_version_date'].append('2023-02') #TODO
     cif['_ma_target_ref_db_details.seq_db_sequence_checksum'].append('?') #TODO
 
+  return cif
+
+def get_citation(citation: list) -> Mapping[str, Sequence[str]]:
+  """Returns the _citation category. 
+  details: (id, title, journal_abbrev, journal_volume, page_first, page_last, year, pdbx_database_id_PubMed, pdbx_database_id_DOI, journal_id_ISSN, journal_id_ASTM, journal_id_CSD, country, book_publisher, authors)"""
+  cif = collections.defaultdict(list)
+  for i, cite in enumerate(citation, start=1):
+    cif['_citation.id'].append(str(i))
+    cif['_citation.title'].append(cite['title'])
+    cif['_citation.journal_full'].append(cite['journal_full'])
+    cif['_citation.journal_volume'].append(cite['journal_volume'])
+    cif['_citation.page_first'].append(cite['page_first'])
+    cif['_citation.page_last'].append(cite['page_last'])
+    cif['_citation.year'].append(cite['year'])
+    cif['_citation.pdbx_database_id_PubMed'].append(cite['pdbx_database_id_PubMed'])
+    cif['_citation.pdbx_database_id_DOI'].append(cite['pdbx_database_id_DOI'])
+    cif['_citation.journal_id_ISSN'].append(cite['journal_id_ISSN'])
+    cif['_citation.journal_id_ASTM'].append(cite['journal_id_ASTM'])
+    cif['_citation.journal_id_CSD'].append(cite['journal_id_CSD'])
+    cif['_citation.country'].append(cite['country'])
+    cif['_citation.book_publisher'].append(cite['book_publisher'])
+  return cif
+
+def get_citation_author(citation: list) -> Mapping[str, Sequence[str]]:
+  """Returns the _citation_author category. 
+  details: (citation_id, name, ordinal)"""
+  cif = collections.defaultdict(list)
+  ordinal = 1
+  for id, cite in enumerate(citation, start=1):
+    print(cite.keys())
+    for author in cite['authors']:
+      cif['_citation_author.citation_id'].append(str(id))
+      cif['_citation_author.name'].append(author)
+      cif['_citation_author.ordinal'].append(str(ordinal))
+      ordinal += 1
   return cif
