@@ -113,7 +113,7 @@ def add_metadata_to_mmcif(
   # DOING: _ma_target_ref_db_details
   cif.update(bfvd_util.get_ma_target_ref_db_details(old_cif))
 
-  cif.update(bfvd_util.get_pdbx_audit_revision(bfvd_constants.VERSION))
+  cif.update(bfvd_util.get_pdbx_audit_revision(bfvd_constants._VERSION))
   
   # Details of the models being deposited.
   cif['_ma_model_list.ordinal_id'] = ['1']
@@ -122,24 +122,25 @@ def add_metadata_to_mmcif(
   cif['_ma_model_list.model_name'] = ['Top ranked model']
 
   cif['_ma_model_list.model_group_name'] = [
-      f'AlphaFold {model_type} v{version.__version__} model'
+      f'ColabFold {model_type} v{bfvd_constants._SOFTWARE[0]["version"]} model'
   ]
   cif['_ma_model_list.data_id'] = ['1']
   cif['_ma_model_list.model_type'] = ['Ab initio model']
 
   # Software used.
-  cif['_software.pdbx_ordinal'] = ['1']
-  cif['_software.name'] = ['AlphaFold']
-  cif['_software.version'] = [f'v{version.__version__}']
-  cif['_software.type'] = ['package']
-  cif['_software.description'] = ['Structure prediction']
-  cif['_software.classification'] = ['other']
-  cif['_software.date'] = ['?']
+  cif.update(bfvd_util.get_software(bfvd_constants._SOFTWARE))
+#   cif['_software.pdbx_ordinal'] = ['1']
+#   cif['_software.name'] = ['AlphaFold']
+#   cif['_software.version'] = [f'v{version.__version__}']
+#   cif['_software.type'] = ['package']
+#   cif['_software.description'] = ['Structure prediction']
+#   cif['_software.classification'] = ['other']
+#   cif['_software.date'] = ['?']
 
   # Collection of software into groups.
-  cif['_ma_software_group.ordinal_id'] = ['1']
-  cif['_ma_software_group.group_id'] = ['1']
-  cif['_ma_software_group.software_id'] = ['1']
+#   cif['_ma_software_group.ordinal_id'] = ['1']
+#   cif['_ma_software_group.group_id'] = ['1']
+#   cif['_ma_software_group.software_id'] = ['1']
 
   # Method description to conform with ModelCIF.
   cif.update(bfvd_util.get_ma_protocol_step())

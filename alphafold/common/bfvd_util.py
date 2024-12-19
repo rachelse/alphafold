@@ -177,7 +177,7 @@ def get_citation_author(citation: list) -> Mapping[str, Sequence[str]]:
       ordinal += 1
   return cif
 
-def get_ma_protocol_step() -> Mapping[str, Sequence[str]:
+def get_ma_protocol_step() -> Mapping[str, Sequence[str]]:
   """Returns the _ma_protocol_step category. 
   details: (ordinal_id, protocol_id, step_id, 'method_type')"""
   cif = collections.defaultdict(list)
@@ -185,4 +185,22 @@ def get_ma_protocol_step() -> Mapping[str, Sequence[str]:
   cif['_ma_protocol_step.protocol_id'] = ['1', '1']
   cif['_ma_protocol_step.step_id'] = ['1', '2']
   cif['_ma_protocol_step.method_type'] = ['coevolution MSA', 'modeling']
+  return cif
+
+def get_software(softwares: list) -> Mapping[str, Sequence[str]]:
+  """Returns the _software category. 
+  details: (ordinal, name, version, classification)"""
+  cif = collections.defaultdict(list)
+  for i, software in enumerate(softwares, start=1):
+    cif['_software.pdbx_ordinal'].append(str(i))
+    cif['_software.name'].append(software['name'])
+    cif['_software.version'].append(software['version'])
+    cif['_software.type'].append(software['type'])
+    cif['_software.description'].append(software['description'])
+    cif['_software.classification'].append(software['classification'])
+
+    cif['_ma_software_group.ordinal_id'].append(str(i))
+    cif['_ma_software_group.software_id'].append(str(i))
+    cif['_ma_software_group.group_id'].append('1')
+
   return cif

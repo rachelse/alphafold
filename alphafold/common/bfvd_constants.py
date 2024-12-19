@@ -120,10 +120,15 @@ _ALPHAFOLD_CITATION = {
     )
 }
 
-VERSION = [
+_VERSION = [
   {
     'data_content_type': 'Structure model', 'provider': 'BFVD', 
     'major_revision': '1', 'minor_revision': '0', 'revision_date': '2024-11-01', 
     'type': 'Initial release', 'description': 'Initial release'
     },
+]
+
+_SOFTWARE = [
+    {"name": "ColabFold", "version": "v1.5.2", "type": "package", "description": "Structure prediction", "classification": "other", "date": "?"},
+    {"name": "AlphaFold", "version": ".", "type": "package", "description": "Structure prediction", "classification": "other", "date": "?"},
 ]
