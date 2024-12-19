@@ -119,3 +119,11 @@ _ALPHAFOLD_CITATION = {
         'Hassabis, Demis',
     )
 }
+
+VERSION = [
+  {
+    'data_content_type': 'Structure model', 'provider': 'BFVD', 
+    'major_revision': '1', 'minor_revision': '0', 'revision_date': '2024-11-01', 
+    'type': 'Initial release', 'description': 'Initial release'
+    },
+]

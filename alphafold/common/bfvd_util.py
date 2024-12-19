@@ -65,17 +65,11 @@ def get_entity_poly_seq_one(chain_index : np.ndarray, residue_index : np.ndarray
     entity_seq[chain] = "\n".join([entity_seq[chain][i:i+80] for i in range(0, len(entity_seq[chain]), 80)])    
   return entity_seq
 
-def get_pdbx_audit_revision():
+def get_pdbx_audit_revision(versions: list) -> Mapping[str, Sequence[str]]:
   """Returns the _pdbx_audit_revision_history category. 
   history: (ordinal, data_content_type, major_revision, minor_revision, revision_date)
   details: (ordinal, revision_ordinal, data_content_type, provider, type, description)"""
-  versions = [
-    {
-      'data_content_type': 'Structure model', 'provider': 'BFVD', 
-      'major_revision': '1', 'minor_revision': '0', 'revision_date': '2024-11-01', 
-      'type': 'Initial release', 'description': 'Initial release'
-     },
-  ]
+
   cif = collections.defaultdict(list)
 
   for i, version in enumerate(versions, start=1):
@@ -176,10 +170,19 @@ def get_citation_author(citation: list) -> Mapping[str, Sequence[str]]:
   cif = collections.defaultdict(list)
   ordinal = 1
   for id, cite in enumerate(citation, start=1):
-    print(cite.keys())
     for author in cite['authors']:
       cif['_citation_author.citation_id'].append(str(id))
       cif['_citation_author.name'].append(author)
       cif['_citation_author.ordinal'].append(str(ordinal))
       ordinal += 1
+  return cif
+
+def get_ma_protocol_step() -> Mapping[str, Sequence[str]:
+  """Returns the _ma_protocol_step category. 
+  details: (ordinal_id, protocol_id, step_id, 'method_type')"""
+  cif = collections.defaultdict(list)
+  cif['_ma_protocol_step.ordinal_id'] = ['1', '2']
+  cif['_ma_protocol_step.protocol_id'] = ['1', '1']
+  cif['_ma_protocol_step.step_id'] = ['1', '2']
+  cif['_ma_protocol_step.method_type'] = ['coevolution MSA', 'modeling']
   return cif

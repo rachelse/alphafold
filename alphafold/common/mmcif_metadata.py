@@ -113,7 +113,7 @@ def add_metadata_to_mmcif(
   # DOING: _ma_target_ref_db_details
   cif.update(bfvd_util.get_ma_target_ref_db_details(old_cif))
 
-  cif.update(bfvd_util.get_pdbx_audit_revision())
+  cif.update(bfvd_util.get_pdbx_audit_revision(bfvd_constants.VERSION))
   
   # Details of the models being deposited.
   cif['_ma_model_list.ordinal_id'] = ['1']
@@ -142,14 +142,7 @@ def add_metadata_to_mmcif(
   cif['_ma_software_group.software_id'] = ['1']
 
   # Method description to conform with ModelCIF.
-  cif['_ma_protocol_step.ordinal_id'] = ['1', '2', '3']
-  cif['_ma_protocol_step.protocol_id'] = ['1', '1', '1']
-  cif['_ma_protocol_step.step_id'] = ['1', '2', '3']
-  cif['_ma_protocol_step.method_type'] = [
-      'coevolution MSA',
-      'template search',
-      'modeling',
-  ]
+  cif.update(bfvd_util.get_ma_protocol_step())
 
   # Details of the metrics use to assess model confidence.
   cif['_ma_qa_metric.id'] = ['1', '2']
