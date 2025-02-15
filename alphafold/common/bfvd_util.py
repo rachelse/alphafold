@@ -36,7 +36,7 @@ def get_ma_qa_metric_local(old_cif: Mapping[str, Sequence[str]]) -> Mapping[str,
        last = old_cif['_atom_site.label_seq_id'][i]
   
   cif['_ma_qa_metric_local.label_asym_id'] = [old_cif['_atom_site.label_asym_id'][i] for i in index]
-  cif['_ma_qa_metric_local.labe_comp_id'] = [old_cif['_atom_site.label_comp_id'][i] for i in index]
+  cif['_ma_qa_metric_local.label_comp_id'] = [old_cif['_atom_site.label_comp_id'][i] for i in index]
   cif['_ma_qa_metric_local.label_seq_id'] = [old_cif['_atom_site.label_seq_id'][i] for i in index]
   cif['_ma_qa_metric_local.metric_id'] = ['2'] * len(index)
   cif['_ma_qa_metric_local.metric_value'] = [old_cif['_atom_site.B_iso_or_equiv'][i] for i in index]
