@@ -13474,18 +13474,24 @@ _ma_target_ref_db_details.organism__scientific           'Hainan hebius popei to
 _ma_target_ref_db_details.seq_db_sequence_version_date   2023-02
 _ma_target_ref_db_details.seq_db_sequence_checksum       ?
 #
-_pdbx_audit_revision_history.ordinal             1
-_pdbx_audit_revision_history.data_content_type   'Structure model'
-_pdbx_audit_revision_history.major_revision      1
-_pdbx_audit_revision_history.minor_revision      0
-_pdbx_audit_revision_history.revision_date       2024-11-01
+loop_
+_pdbx_audit_revision_history.ordinal
+_pdbx_audit_revision_history.data_content_type
+_pdbx_audit_revision_history.major_revision
+_pdbx_audit_revision_history.minor_revision
+_pdbx_audit_revision_history.revision_date
+1 'Structure model' 1 0 2024-11-01 
+2 'Structure model' 1 1 2025-03-10 
 #
-_pdbx_audit_revision_details.ordinal             1
-_pdbx_audit_revision_details.revision_ordinal    1
-_pdbx_audit_revision_details.data_content_type   'Structure model'
-_pdbx_audit_revision_details.provider            BFVD
-_pdbx_audit_revision_details.type                'Initial release'
-_pdbx_audit_revision_details.description         'Initial release'
+loop_
+_pdbx_audit_revision_details.ordinal
+_pdbx_audit_revision_details.revision_ordinal
+_pdbx_audit_revision_details.data_content_type
+_pdbx_audit_revision_details.provider
+_pdbx_audit_revision_details.type
+_pdbx_audit_revision_details.description
+1 1 'Structure model' BFVD 'Initial release' 'Initial release'                                               
+2 2 'Structure model' BFVD Update            '12 cycle predictions for BASE+LOGAN MSAs (version: 2023_02_1)' 
 #
 _ma_model_list.ordinal_id         1
 _ma_model_list.model_id           1

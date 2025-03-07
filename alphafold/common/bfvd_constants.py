@@ -121,17 +121,14 @@ _ALPHAFOLD_CITATION = {
 }
 
 _VERSION = [
-  {
-    'data_content_type': 'Structure model', 'provider': 'BFVD', 
-    'major_revision': '1', 'minor_revision': '0', 'revision_date': '2024-11-01', 
-    'type': 'Initial release', 'description': 'Initial release'
-    },
+    {'data_content_type': 'Structure model', 'provider': 'BFVD', 'major_revision': '1', 'minor_revision': '0', 'revision_date': '2024-11-01', 'type': 'Initial release', 'description': 'Initial release'},
+    {'data_content_type': 'Structure model', 'provider': 'BFVD', 'major_revision': '1', 'minor_revision': '1', 'revision_date': '2025-03-10', 'type': 'Update', 'description': 'Applied 12 recycle predictions for BASE+LOGAN MSAs (version: 2023_02_1)'}
 ]
 
 _SOFTWARE = [
-    {"name": "ColabFold", "version": "v1.5.2", "type": "package", "description": "Structure prediction", "classification": "other", "date": "?"},
+    {"name": "ColabFold", "version": "v1.5.5", "type": "package", "description": "Structure prediction", "classification": "other", "date": "?"},
     {"name": "AlphaFold", "version": ".", "type": "package", "description": "Structure prediction", "classification": "other", "date": "?"},
 ]
  
-_BFVD_DATA = "bfvd/metadata/bfvd_logan-entry_acc_start_end_len_plddt_taxid_organism_src.tsv"
-_UNIPROT_DATA = "bfvd/metadata/uniprot-acc_length_taxid_organism_src_id_description_gene.tsv"
+_BFVD_DATA = "/home/seamustard52/repository/alphafold-rachelse/bfvd/metadata/bfvd_logan-entry_acc_start_end_len_plddt_taxid_organism_src.tsv"
+_UNIPROT_DATA = "/home/seamustard52/repository/alphafold-rachelse/bfvd/metadata/uniprot-acc_length_taxid_organism_src_id_description_gene.tsv"

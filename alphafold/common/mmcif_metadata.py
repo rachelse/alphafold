@@ -47,6 +47,7 @@ _CITATIONS = [bfvd_constants._BFVD_CITATION, bfvd_constants._COLABFOLD_CITATION,
 
 def add_metadata_to_mmcif(
     old_cif: Mapping[str, Sequence[str]], model_type: str,
+    uniprot_data, bfvd_data
 ) -> Mapping[str, Sequence[str]]:
   """Adds AlphaFold metadata in the given mmCIF."""
   cif = {}
@@ -111,7 +112,7 @@ def add_metadata_to_mmcif(
   )
 
   # DOING: _ma_target_ref_db_details
-  cif.update(bfvd_util.get_ma_target_ref_db_details(old_cif))
+  cif.update(bfvd_util.get_ma_target_ref_db_details(old_cif, uniprot_data, bfvd_data))
 
   cif.update(bfvd_util.get_pdbx_audit_revision(bfvd_constants._VERSION))
   

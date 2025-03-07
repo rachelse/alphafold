@@ -9,6 +9,7 @@ from alphafold.common import residue_constants
 import numpy as np
 import pandas as pd
 import collections
+from typing import List
 import alphafold.common.bfvd_constants as bfvd_constants
 
 def add_atom_site(old_cif: Mapping[str, Sequence[str]]):
@@ -67,7 +68,7 @@ def get_entity_poly_seq_one(chain_index : np.ndarray, residue_index : np.ndarray
     entity_seq[chain] = "\n".join([entity_seq[chain][i:i+80] for i in range(0, len(entity_seq[chain]), 80)])    
   return entity_seq
 
-def get_pdbx_audit_revision(versions: list) -> Mapping[str, Sequence[str]]:
+def get_pdbx_audit_revision(versions: List) -> Mapping[str, Sequence[str]]:
   """Returns the _pdbx_audit_revision_history category. 
   history: (ordinal, data_content_type, major_revision, minor_revision, revision_date)
   details: (ordinal, revision_ordinal, data_content_type, provider, type, description)"""
@@ -90,6 +91,7 @@ def get_pdbx_audit_revision(versions: list) -> Mapping[str, Sequence[str]]:
   return cif
 
 def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
+                                uniprot_data, bfvd_data
                                 ) -> Mapping[str, Sequence[str]]:
   """Returns the _ma_target_ref_db_details category. 
   details: (target_entity_id, 
@@ -98,21 +100,22 @@ def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
             gene_name, ncbi_taxonomy_id, organism__scientific,
             seq_db_sequence_version_date, seq_db_sequence_checksum)"""
 
-  uniprot_data = pd.read_csv(bfvd_constants._UNIPROT_DATA, sep="\t", 
-                           names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
-                           dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
-                           index_col=0
-                           ).fillna("?").T.to_dict()
+  # uniprot_data = pd.read_csv(bfvd_constants._UNIPROT_DATA, sep="\t", 
+  #                          names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
+  #                          dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
+  #                          index_col=0
+  #                          ).fillna("?").T.to_dict()
   
-  bfvd_data = pd.read_csv(bfvd_constants._BFVD_DATA, sep="\t",
-                        names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
-                        dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
-                        index_col=0).T.to_dict()
+  # bfvd_data = pd.read_csv(bfvd_constants._BFVD_DATA, sep="\t",
+  #                       names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
+  #                       dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
+  #                       index_col=0).T.to_dict()
 
   cif = collections.defaultdict(list)
   filename = old_cif['_entry.id']
-  idx = filename.find("_UNRELAXED_RANK_001")
+  idx = filename.find("_UNRELAXED_RANK_001", 0, len(filename))
   entry = filename[:idx]
+  entry = filename
   acc = entry.split("_")[0]
   
   for id in range(len(old_cif['_entity.id'])):
@@ -143,7 +146,7 @@ def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
 
   return cif
 
-def get_citation(citation: list) -> Mapping[str, Sequence[str]]:
+def get_citation(citation: List) -> Mapping[str, Sequence[str]]:
   """Returns the _citation category. 
   details: (id, title, journal_abbrev, journal_volume, page_first, page_last, year, pdbx_database_id_PubMed, pdbx_database_id_DOI, journal_id_ISSN, journal_id_ASTM, journal_id_CSD, country, book_publisher, authors)"""
   cif = collections.defaultdict(list)
@@ -164,7 +167,7 @@ def get_citation(citation: list) -> Mapping[str, Sequence[str]]:
     cif['_citation.book_publisher'].append(cite['book_publisher'])
   return cif
 
-def get_citation_author(citation: list) -> Mapping[str, Sequence[str]]:
+def get_citation_author(citation: List) -> Mapping[str, Sequence[str]]:
   """Returns the _citation_author category. 
   details: (citation_id, name, ordinal)"""
   cif = collections.defaultdict(list)
@@ -187,7 +190,7 @@ def get_ma_protocol_step() -> Mapping[str, Sequence[str]]:
   cif['_ma_protocol_step.method_type'] = ['coevolution MSA', 'modeling']
   return cif
 
-def get_software(softwares: list) -> Mapping[str, Sequence[str]]:
+def get_software(softwares: List) -> Mapping[str, Sequence[str]]:
   """Returns the _software category. 
   details: (ordinal, name, version, classification)"""
   cif = collections.defaultdict(list)
