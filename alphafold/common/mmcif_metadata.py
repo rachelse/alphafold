@@ -47,7 +47,6 @@ _CITATIONS = [bfvd_constants._BFVD_CITATION, bfvd_constants._COLABFOLD_CITATION,
 
 def add_metadata_to_mmcif(
     old_cif: Mapping[str, Sequence[str]], model_type: str,
-    uniprot_data, bfvd_data
 ) -> Mapping[str, Sequence[str]]:
   """Adds AlphaFold metadata in the given mmCIF."""
   cif = {}
@@ -112,48 +111,48 @@ def add_metadata_to_mmcif(
   )
 
   # DOING: _ma_target_ref_db_details
-  cif.update(bfvd_util.get_ma_target_ref_db_details(old_cif, uniprot_data, bfvd_data))
+  cif.update(bfvd_util.get_ma_target_ref_db_details(old_cif))
 
-  cif.update(bfvd_util.get_pdbx_audit_revision(bfvd_constants._VERSION))
+#   cif.update(bfvd_util.get_pdbx_audit_revision(bfvd_constants._VERSION))
   
-  # Details of the models being deposited.
-  cif['_ma_model_list.ordinal_id'] = ['1']
-  cif['_ma_model_list.model_id'] = ['1']
-  cif['_ma_model_list.model_group_id'] = ['1']
-  cif['_ma_model_list.model_name'] = ['Top ranked model']
+#   # Details of the models being deposited.
+#   cif['_ma_model_list.ordinal_id'] = ['1']
+#   cif['_ma_model_list.model_id'] = ['1']
+#   cif['_ma_model_list.model_group_id'] = ['1']
+#   cif['_ma_model_list.model_name'] = ['Top ranked model']
 
-  cif['_ma_model_list.model_group_name'] = [
-      f'ColabFold {model_type} v{bfvd_constants._SOFTWARE[0]["version"]} model'
-  ]
-  cif['_ma_model_list.data_id'] = ['1']
-  cif['_ma_model_list.model_type'] = ['Ab initio model']
+#   cif['_ma_model_list.model_group_name'] = [
+#       f'ColabFold {model_type} v{bfvd_constants._SOFTWARE[0]["version"]} model'
+#   ]
+#   cif['_ma_model_list.data_id'] = ['1']
+#   cif['_ma_model_list.model_type'] = ['Ab initio model']
 
-  # Software used.
-  cif.update(bfvd_util.get_software(bfvd_constants._SOFTWARE))
+#   # Software used.
+#   cif.update(bfvd_util.get_software(bfvd_constants._SOFTWARE))
 
-  # Method description to conform with ModelCIF.
-  cif.update(bfvd_util.get_ma_protocol_step())
+#   # Method description to conform with ModelCIF.
+#   cif.update(bfvd_util.get_ma_protocol_step())
 
-  # Details of the metrics use to assess model confidence.
-  cif['_ma_qa_metric.id'] = ['1', '2']
-  cif['_ma_qa_metric.name'] = ['pLDDT', 'pLDDT']
-  # Accepted values are distance, energy, normalised score, other, zscore.
-  cif['_ma_qa_metric.type'] = ['pLDDT', 'pLDDT']
-  cif['_ma_qa_metric.mode'] = ['global', 'local']
-  cif['_ma_qa_metric.software_group_id'] = ['1', '1']
+#   # Details of the metrics use to assess model confidence.
+#   cif['_ma_qa_metric.id'] = ['1', '2']
+#   cif['_ma_qa_metric.name'] = ['pLDDT', 'pLDDT']
+#   # Accepted values are distance, energy, normalised score, other, zscore.
+#   cif['_ma_qa_metric.type'] = ['pLDDT', 'pLDDT']
+#   cif['_ma_qa_metric.mode'] = ['global', 'local']
+#   cif['_ma_qa_metric.software_group_id'] = ['1', '1']
 
-  # Global model confidence metric value.
-  cif['_ma_qa_metric_global.ordinal_id'] = ['1']
-  cif['_ma_qa_metric_global.model_id'] = ['1']
-  cif['_ma_qa_metric_global.metric_id'] = ['1']
-  global_plddt = np.mean(
-      [float(v) for v in old_cif['_atom_site.B_iso_or_equiv']]
-  )
-  cif['_ma_qa_metric_global.metric_value'] = [f'{global_plddt:.2f}']
+#   # Global model confidence metric value.
+#   cif['_ma_qa_metric_global.ordinal_id'] = ['1']
+#   cif['_ma_qa_metric_global.model_id'] = ['1']
+#   cif['_ma_qa_metric_global.metric_id'] = ['1']
+#   global_plddt = np.mean(
+#       [float(v) for v in old_cif['_atom_site.B_iso_or_equiv']]
+#   )
+#   cif['_ma_qa_metric_global.metric_value'] = [f'{global_plddt:.2f}']
 
-  ma_qa_metric_local = bfvd_util.get_ma_qa_metric_local(old_cif)
-  cif.update(ma_qa_metric_local)
+#   ma_qa_metric_local = bfvd_util.get_ma_qa_metric_local(old_cif)
+#   cif.update(ma_qa_metric_local)
 
-  cif['_atom_type.symbol'] = sorted(set(old_cif['_atom_site.type_symbol']))
+#   cif['_atom_type.symbol'] = sorted(set(old_cif['_atom_site.type_symbol']))
 
   return cif

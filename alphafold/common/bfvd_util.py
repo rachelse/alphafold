@@ -91,7 +91,6 @@ def get_pdbx_audit_revision(versions: List) -> Mapping[str, Sequence[str]]:
   return cif
 
 def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
-                                uniprot_data, bfvd_data
                                 ) -> Mapping[str, Sequence[str]]:
   """Returns the _ma_target_ref_db_details category. 
   details: (target_entity_id, 
@@ -100,16 +99,16 @@ def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
             gene_name, ncbi_taxonomy_id, organism__scientific,
             seq_db_sequence_version_date, seq_db_sequence_checksum)"""
 
-  # uniprot_data = pd.read_csv(bfvd_constants._UNIPROT_DATA, sep="\t", 
-  #                          names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
-  #                          dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
-  #                          index_col=0
-  #                          ).fillna("?").T.to_dict()
+  uniprot_data = pd.read_csv(bfvd_constants._UNIPROT_DATA, sep="\t", 
+                           names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
+                           dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
+                           index_col=0
+                           ).fillna("?").T.to_dict()
   
-  # bfvd_data = pd.read_csv(bfvd_constants._BFVD_DATA, sep="\t",
-  #                       names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
-  #                       dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
-  #                       index_col=0).T.to_dict()
+  bfvd_data = pd.read_csv(bfvd_constants._BFVD_DATA, sep="\t",
+                        names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
+                        dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
+                        index_col=0).T.to_dict()
 
   cif = collections.defaultdict(list)
   filename = old_cif['_entry.id']
@@ -132,6 +131,14 @@ def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
       db_code = uniprot_data[acc]['id']
       gene = uniprot_data[acc]['gene']
 
+    taxid = bfvd_data[entry]['taxid']
+    organism = bfvd_data[entry]['organism']
+    try:
+      valid = len(taxid)
+    except:
+      taxid = "?"
+      organism = "?"
+      
     cif['_ma_target_ref_db_details.db_name_other_details'].append(db_details)
     cif['_ma_target_ref_db_details.db_code'].append(db_code)
     cif['_ma_target_ref_db_details.db_accession'].append(acc)
@@ -139,8 +146,8 @@ def get_ma_target_ref_db_details(old_cif: Mapping[str, Sequence[str]],
     cif['_ma_target_ref_db_details.seq_db_align_begin'].append(str(bfvd_data[entry]['start']))
     cif['_ma_target_ref_db_details.seq_db_align_end'].append(str(bfvd_data[entry]['end']))
     cif['_ma_target_ref_db_details.gene_name'].append(gene)
-    cif['_ma_target_ref_db_details.ncbi_taxonomy_id'].append(str(bfvd_data[entry]['taxid']))
-    cif['_ma_target_ref_db_details.organism__scientific'].append(bfvd_data[entry]['organism'])
+    cif['_ma_target_ref_db_details.ncbi_taxonomy_id'].append(taxid)
+    cif['_ma_target_ref_db_details.organism__scientific'].append(organism)
     cif['_ma_target_ref_db_details.seq_db_sequence_version_date'].append('2023-02') #TODO
     cif['_ma_target_ref_db_details.seq_db_sequence_checksum'].append('?') #TODO
 

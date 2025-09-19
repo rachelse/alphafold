@@ -364,7 +364,6 @@ def to_mmcif(
     prot: Protein,
     file_id: str,
     model_type: str,
-    uniprot_data, bfvd_data # BFVD customizations
 ) -> str:
   """Converts a `Protein` instance to an mmCIF string.
 
@@ -499,15 +498,12 @@ def to_mmcif(
       mmcif_dict['_atom_site.auth_asym_id'].append(chain_ids[chain_index[i]])
       mmcif_dict['_atom_site.pdbx_PDB_model_num'].append('1')
 
-      #DOING
-      # bfvd_util.add_atom_site(mmcif_dict)
-
       atom_index += 1
 
-  metadata_dict = mmcif_metadata.add_metadata_to_mmcif(mmcif_dict, model_type, uniprot_data, bfvd_data)
+  metadata_dict = mmcif_metadata.add_metadata_to_mmcif(mmcif_dict, model_type)
   mmcif_dict.update(metadata_dict)
 
-  bfvd_util.add_atom_site(mmcif_dict)
+  # bfvd_util.add_atom_site(mmcif_dict)
 
   return _create_mmcif_string(mmcif_dict)
 

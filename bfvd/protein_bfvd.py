@@ -23,7 +23,7 @@ import pandas as pd
 from alphafold.common import protein
 from alphafold.common import bfvd_constants
 
-def pdb2cif(pdb_file, cif_file, uniprot_data, bfvd_data, file_id=None):
+def pdb2cif(pdb_file, cif_file, file_id=None):
     with open(pdb_file) as f:
         pdb_string = f.read()
 
@@ -32,7 +32,7 @@ def pdb2cif(pdb_file, cif_file, uniprot_data, bfvd_data, file_id=None):
 
     prot = protein.from_pdb_string(pdb_string)
     print(f"Converting {pdb_file} to {cif_file}")
-    cif = protein.to_mmcif(prot, file_id,  "Monomer", uniprot_data, bfvd_data)
+    cif = protein.to_mmcif(prot, file_id,  "Monomer")
     with open(cif_file, "w") as f:
         print(f"Writing cif to {cif_file}")
         f.write(cif)
@@ -57,15 +57,15 @@ if __name__ == "__main__":
         raise ValueError("Input path does not exist")
 
     input_path = Path(args.pdb)
-    uniprot_data = pd.read_csv(bfvd_constants._UNIPROT_DATA, sep="\t", 
-                        names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
-                        dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
-                        index_col=0
-                        ).fillna("?").T.to_dict()
-    bfvd_data = pd.read_csv(bfvd_constants._BFVD_DATA, sep="\t",
-                        names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
-                        dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
-                        index_col=0).T.to_dict()
+    # uniprot_data = pd.read_csv(bfvd_constants._UNIPROT_DATA, sep="\t", 
+    #                     names=["acc", "length", "taxid", "organism", "src", "id", "description", "gene"],
+    #                     dtype={"acc": str, "length": int, "taxid": str, "organism": str, "src": str, "id": str, "description": str, "gene": str},
+    #                     index_col=0
+    #                     ).fillna("?").T.to_dict()
+    # bfvd_data = pd.read_csv(bfvd_constants._BFVD_DATA, sep="\t",
+    #                     names=["entry", "acc", "start", "end", "len", "plddt", "taxid", "organism", "src"], 
+    #                     dtype={"entry": str, "acc": str, "start": int, "end": int, "len": int, "plddt": float, "taxid": str, "organism": str, "src": str},
+    #                     index_col=0).T.to_dict()
 
     if input_path.is_file():
         if args.cif.endswith(".cif"):
@@ -73,7 +73,10 @@ if __name__ == "__main__":
         else:
             raise ValueError("Output path must be a .cif file")
         output_path = Path(args.cif)
-        pdb2cif(input_path, output_path, uniprot_data, bfvd_data)
+        if not os.path.exists(output_path):
+            pdb2cif(input_path, output_path)
+        else:
+            print(f"{output_path} already exists")
     elif args.cpus ==1:
         if not os.path.exists(args.cif):
             os.makedirs(args.cif)
@@ -81,7 +84,10 @@ if __name__ == "__main__":
         pdb_files = list(input_path.glob("*.pdb"))
         cif_files = [os.path.join(args.cif, os.path.basename(pdb_file).split(".")[0] + ".cif") for pdb_file in pdb_files]
         for pdb_file, cif_file in zip(pdb_files, cif_files):
-            pdb2cif(pdb_file, cif_file, uniprot_data, bfvd_data)
+            if not os.path.exists(cif_file):
+                pdb2cif(pdb_file, cif_file)
+            else:
+                print(f"{cif_file} already exists")
     else:
         if not os.path.exists(args.cif):
             os.makedirs(args.cif)
@@ -93,5 +99,11 @@ if __name__ == "__main__":
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=args.cpus) as executor:
 
-            futures = [executor.submit(pdb2cif, pdb_file, cif_file, uniprot_data, bfvd_data) for pdb_file, cif_file in zip(pdb_files, cif_files)]
+            # futures = [executor.submit(pdb2cif, pdb_file, cif_file) for pdb_file, cif_file in zip(pdb_files, cif_files)]
+            futures = []
+            for pdb_file, cif_file in zip(pdb_files, cif_files):
+                if not os.path.exists(cif_file):
+                    futures.append(executor.submit(pdb2cif, pdb_file, cif_file))
+                else:
+                    print(f"{cif_file} already exists")
             concurrent.futures.wait(futures)
